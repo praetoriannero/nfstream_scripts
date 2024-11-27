@@ -1,4 +1,5 @@
 import warnings
+
 warnings.filterwarnings("ignore")  # ignore UserWarnings
 
 import click
@@ -72,13 +73,20 @@ def main(input_path, label_path, output_path, cores):
         print("Completed")
         malicious_label_df = label_df.loc[label_df["label"] != "benign"]
         unique_flow_keys = list(set(malicious_label_df["flow_id"].unique()))
-        flow_extents = malicious_label_df[["bidirectional_first_seen_ms", "bidirectional_last_seen_ms"]].to_numpy()
+        flow_extents = malicious_label_df[
+            ["bidirectional_first_seen_ms", "bidirectional_last_seen_ms"]
+        ].to_numpy()
         label_array = malicious_label_df["label"].to_numpy()
 
         chunk_size = int(np.ceil(len(unique_flow_keys) / cpu_cores))
-        flow_key_arrs = [unique_flow_keys[idx * chunk_size: (idx + 1) * chunk_size] for idx in range(cpu_cores)]
+        flow_key_arrs = [
+            unique_flow_keys[idx * chunk_size : (idx + 1) * chunk_size]
+            for idx in range(cpu_cores)
+        ]
 
-        def _get_flow_times_labels(unique_flow_keys, flow_dict, flow_extents, label_array):
+        def _get_flow_times_labels(
+            unique_flow_keys, flow_dict, flow_extents, label_array
+        ):
             for flow_id in unique_flow_keys:
                 flow_id_mask = malicious_label_df["flow_id"] == flow_id
                 flow_dict[flow_id] = {
@@ -88,9 +96,12 @@ def main(input_path, label_path, output_path, cores):
 
         # flow_dict = {}
         flow_dict = mp.Manager().dict()
-        procs = [mp.Process(
-            target=_get_flow_times_labels,
-            args=(unique_keys, flow_dict, flow_extents, label_array)) for unique_keys in flow_key_arrs
+        procs = [
+            mp.Process(
+                target=_get_flow_times_labels,
+                args=(unique_keys, flow_dict, flow_extents, label_array),
+            )
+            for unique_keys in flow_key_arrs
         ]
         start_time = time.time()
         for p in procs:
@@ -106,9 +117,9 @@ def main(input_path, label_path, output_path, cores):
         with open(pcap_file, "rb") as pcap_handle:
             pcap_reader = UniversalReader(pcap_handle)
             for idx, (ts, buf) in tqdm(
-                    enumerate(pcap_reader),
-                    total=total_packet_count,
-                    desc="Reading PCAP file"
+                enumerate(pcap_reader),
+                total=total_packet_count,
+                desc="Reading PCAP file",
             ):
                 results_arr.append((idx, "benign"))
 
@@ -128,24 +139,28 @@ def main(input_path, label_path, output_path, cores):
                 transport_pdu = ip_pdu.data
 
                 flow_key_src2dst = "-".join(
-                    [str(val) for val in (
-                        ip_to_str(ip_pdu.src),
-                        ip_to_str(ip_pdu.dst),
-                        transport_pdu.sport,
-                        transport_pdu.dport,
-                        ip_pdu.p,
-                    )
+                    [
+                        str(val)
+                        for val in (
+                            ip_to_str(ip_pdu.src),
+                            ip_to_str(ip_pdu.dst),
+                            transport_pdu.sport,
+                            transport_pdu.dport,
+                            ip_pdu.p,
+                        )
                     ]
                 )
 
                 flow_key_dst2src = "-".join(
-                    [str(val) for val in (
-                        ip_to_str(ip_pdu.dst),
-                        ip_to_str(ip_pdu.src),
-                        transport_pdu.dport,
-                        transport_pdu.sport,
-                        ip_pdu.p,
-                    )
+                    [
+                        str(val)
+                        for val in (
+                            ip_to_str(ip_pdu.dst),
+                            ip_to_str(ip_pdu.src),
+                            transport_pdu.dport,
+                            transport_pdu.sport,
+                            ip_pdu.p,
+                        )
                     ]
                 )
 

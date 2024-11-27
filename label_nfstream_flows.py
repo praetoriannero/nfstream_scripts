@@ -25,8 +25,10 @@ def compare_timestamps(cic_flows, nf_flows):
     max_end = cic_flows[:, 1].max()
     for i in range(nf_flows.shape[0]):
         ret_arr[i] = (
-            (nf_flows[i, 0] >= min_start) & (nf_flows[i, 1] <= max_end) &
-            (cic_flows[:, 0] <= nf_flows[i, 0]) | (cic_flows[:, 1] >= nf_flows[i, 1])
+            (nf_flows[i, 0] >= min_start)
+            & (nf_flows[i, 1] <= max_end)
+            & (cic_flows[:, 0] <= nf_flows[i, 0])
+            | (cic_flows[:, 1] >= nf_flows[i, 1])
         ).sum() > 0
 
     return ret_arr
@@ -194,10 +196,15 @@ def main(
             # print(len(cic_mal_flows))
             # print(np.sum(valid_indices))
             # nf_df["label"].iloc[nf_mal_flows.index[valid_indices]] = label
-            cic_total_packets = cic_mal_flows["Total Fwd Packet"].sum() + cic_mal_flows["Total Bwd packets"].sum()
+            cic_total_packets = (
+                cic_mal_flows["Total Fwd Packet"].sum()
+                + cic_mal_flows["Total Bwd packets"].sum()
+            )
             print("\tPacket totals:")
             print("\tCIC", cic_total_packets)
-            nfs_total_packets = nf_df.loc[nf_df["label"] == label, "bidirectional_packets"].sum()
+            nfs_total_packets = nf_df.loc[
+                nf_df["label"] == label, "bidirectional_packets"
+            ].sum()
             print("\tNFS", nfs_total_packets)
 
         csv_name = os.path.split(nfs_csv)[-1]
