@@ -66,7 +66,7 @@ def main(input_path, label_path, output_path, cores):
     else:
         cpu_cores = min(cores, mp.cpu_count() - 1)
 
-    for (pcap_file, csv_file) in csv_file_pairs:
+    for pcap_file, csv_file in csv_file_pairs:
         print(f"Analyzing {pcap_file} using {csv_file}...")
         print("Reading CSV into dataframe")
         label_df = pd.read_csv(csv_file, delimiter="\t")
@@ -192,7 +192,7 @@ def main(input_path, label_path, output_path, cores):
         with open(output_csv_path, "w") as output_handle:
             print(f"Writing output to {output_csv_path}")
             output_handle.write("index,label\n")
-            for (idx, label) in tqdm(results_arr):
+            for idx, label in tqdm(results_arr):
                 string = f"{str(idx)},{label}\n"
                 output_handle.write(string)
 
