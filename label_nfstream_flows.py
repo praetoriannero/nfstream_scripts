@@ -184,8 +184,10 @@ def main(
             print("\tCIC", len(cic_mal_flows))
             print("\tNFS", len(refined_nf_mal_flows))
             nf_df["label"].iloc[refined_nf_mal_flows.index] = label
-            # cic_mal_flows["cic_flow_start_ms"] = (cic_mal_flows["cic_flow_start"] - pd.Timestamp("1970-01-01")).dt.total_seconds() * 1000.0
-            # cic_mal_flows["cic_flow_end_ms"] = (cic_mal_flows["cic_flow_end"] - pd.Timestamp("1970-01-01")).dt.total_seconds() * 1000.0
+            # cic_mal_flows["cic_flow_start_ms"] = \
+            #   (cic_mal_flows["cic_flow_start"] - pd.Timestamp("1970-01-01")).dt.total_seconds() * 1000.0
+            # cic_mal_flows["cic_flow_end_ms"] = \
+            #   (cic_mal_flows["cic_flow_end"] - pd.Timestamp("1970-01-01")).dt.total_seconds() * 1000.0
             # cic_time_extents = cic_mal_flows[["cic_flow_start_ms", "cic_flow_end_ms"]].to_numpy()
             # nf_time_extents = nf_mal_flows[["bidirectional_first_seen_ms", "bidirectional_last_seen_ms"]].to_numpy()
             # valid_indices = compare_timestamps(cic_time_extents, nf_time_extents)
